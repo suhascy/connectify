@@ -2,7 +2,7 @@ import { Box, Input, Text } from "@chakra-ui/react";
 import axios from "axios";
 import io from "socket.io-client";
 import { useEffect, useState, useRef } from "react";
-import { ChatState } from "../Context/ChatProvider";
+import { ChatState } from "../context/ChatProvider";
 
 const ENDPOINT = import.meta.env.VITE_API_URL;
 

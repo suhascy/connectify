@@ -6,7 +6,7 @@ import "./index.css";
 import { ChakraProvider } from "@chakra-ui/react";
 import { BrowserRouter } from "react-router-dom";
 
-import ChatProvider from "./Context/ChatProvider";
+import ChatProvider from "./context/ChatProvider";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

@@ -11,7 +11,7 @@ import {
 import axios from "axios";
 import { useState } from "react";
 
-import { ChatState } from "../Context/ChatProvider";
+import { ChatState } from "../context/ChatProvider";
 import UserListItem from "./userAvatar/UserListItem";
 import { accessChat } from "../config/ChatLogic";
 

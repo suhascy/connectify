@@ -1,7 +1,7 @@
 import { Box, Text, Badge } from "@chakra-ui/react";
 import { useEffect } from "react";
 import axios from "axios";
-import { ChatState } from "../Context/ChatProvider";
+import { ChatState } from "../context/ChatProvider";
 
 const MyChats = () => {
   const {
