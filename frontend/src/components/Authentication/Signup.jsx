@@ -33,7 +33,7 @@ const Signup = () => {
       };
 
       const { data } = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/users/login`,
+        `${import.meta.env.VITE_API_URL}/api/users`,
         {
           name,
           email,
