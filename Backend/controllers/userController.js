@@ -32,9 +32,9 @@ export const registerUser = async (req, res) => {
     }
   } catch (error) {
     console.log("REGISTER ERROR:", error);
-    res.status(500).json({
-      message: error.message,
-    });
+    res.status(res.statusCode === 200 ? 500 : res.statusCode).json({
+  message: error.message,
+});
   }
 };
 
@@ -113,8 +113,8 @@ export const allUsers = async (req, res) => {
     console.log("SEARCH ERROR:");
     console.log(error);
 
-    res.status(500).json({
-      message: error.message,
-    });
+    res.status(res.statusCode === 200 ? 500 : res.statusCode).json({
+  message: error.message,
+});
   }
 };
