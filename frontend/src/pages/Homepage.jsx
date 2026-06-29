@@ -18,14 +18,11 @@ import {
 function Homepage() {
   const navigate = useNavigate();
 
-  // 👇 Replace your current useEffect with this one
   useEffect(() => {
     const userInfo = localStorage.getItem("userInfo");
 
-    console.log("Homepage userInfo:", userInfo);
-
     if (userInfo) {
-      navigate("/chats");
+      navigate("/chats", { replace: true });
     }
   }, [navigate]);
 
@@ -46,13 +43,7 @@ function Homepage() {
         </Text>
       </Box>
 
-      <Box
-        bg="white"
-        w="100%"
-        p={4}
-        borderRadius="lg"
-        borderWidth="1px"
-      >
+      <Box bg="white" w="100%" p={4} borderRadius="lg" borderWidth="1px">
         <Tabs variant="soft-rounded" colorScheme="purple">
           <TabList mb="1em">
             <Tab width="50%">Login</Tab>
