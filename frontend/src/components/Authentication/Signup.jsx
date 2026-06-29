@@ -5,11 +5,10 @@ import {
   Input,
   VStack,
 } from "@chakra-ui/react";
-
 import axios from "axios";
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ChatState } from "../context/ChatProvider";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -17,11 +16,11 @@ const Signup = () => {
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
+  const { setUser } = ChatState();
 
   const submitHandler = async () => {
     if (!name || !email || !password) {
       alert("Please fill all fields");
-
       return;
     }
 
@@ -34,18 +33,12 @@ const Signup = () => {
 
       const { data } = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/users`,
-        {
-          name,
-          email,
-          password,
-        },
+        { name, email, password },
         config
       );
 
-      localStorage.setItem(
-        "userInfo",
-        JSON.stringify(data)
-      );
+      localStorage.setItem("userInfo", JSON.stringify(data));
+      setUser(data);
 
       navigate("/chats");
     } catch (error) {
@@ -58,35 +51,29 @@ const Signup = () => {
     <VStack spacing="5px">
       <FormControl id="first-name" isRequired>
         <FormLabel>Name</FormLabel>
-
         <Input
           placeholder="Enter Your Name"
-          onChange={(e) =>
-            setName(e.target.value)
-          }
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
       </FormControl>
 
       <FormControl id="email" isRequired>
         <FormLabel>Email</FormLabel>
-
         <Input
           placeholder="Enter Your Email"
-          onChange={(e) =>
-            setEmail(e.target.value)
-          }
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
       </FormControl>
 
       <FormControl id="password" isRequired>
         <FormLabel>Password</FormLabel>
-
         <Input
           type="password"
           placeholder="Enter Your Password"
-          onChange={(e) =>
-            setPassword(e.target.value)
-          }
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
       </FormControl>
 
