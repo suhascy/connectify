@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { ChatState } from "../context/ChatProvider";
+import { ChatState } from "../../context/ChatProvider";
 
 function Login() {
   const [email, setEmail] = useState("");

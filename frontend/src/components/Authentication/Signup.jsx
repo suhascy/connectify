@@ -8,7 +8,7 @@ import {
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChatState } from "../context/ChatProvider";
+import { ChatState } from "../../context/ChatProvider";
 
 const Signup = () => {
   const [name, setName] = useState("");
