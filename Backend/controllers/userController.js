@@ -61,7 +61,7 @@ export const authUser = async (req, res) => {
     }
   } catch (error) {
     console.log("LOGIN ERROR:", error);
-    res.status(500).json({
+    res.status(res.statusCode === 200 ? 500 : res.statusCode).json({
       message: error.message,
     });
   }
