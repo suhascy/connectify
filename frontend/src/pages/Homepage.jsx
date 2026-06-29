@@ -47,15 +47,16 @@ function Homepage() {
             <Tab width="50%">Sign Up</Tab>
           </TabList>
 
-          <TabPanels>
-            <TabPanel>
-              <Login />
-            </TabPanel>
+<TabPanels>
+  <TabPanel>
+    <Login />
+  </TabPanel>
 
-            <TabPanel>
-              <Signup />
-            </TabPanel>
-          </TabPanels>
+  <TabPanel>
+    <Signup />
+  </TabPanel>
+</TabPanels>
+          
         </Tabs>
       </Box>
     </Container>

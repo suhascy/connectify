@@ -9,7 +9,7 @@ export const accessChat = async (userId, token) => {
   };
 
   const { data } = await axios.post(
-    `${import.meta.env.VITE_API_URL}/api/users/login`,
+    `${import.meta.env.VITE_API_URL}/api/chat`,
     { userId },
     config
   );

@@ -30,7 +30,7 @@ function Chats() {
         h="91.5vh"
         p="10px"
       >
-        {user && <MyChats />}
+        {/* {user && <MyChats />} */}
         {user && <ChatBox />}
       </Box>
     </div>
