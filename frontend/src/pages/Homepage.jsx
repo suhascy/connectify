@@ -1,5 +1,6 @@
 import Login from "../components/Authentication/Login";
 import Signup from "../components/Authentication/Signup";
+
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -17,13 +18,17 @@ import {
 function Homepage() {
   const navigate = useNavigate();
 
-useEffect(() => {
-  const userInfo = localStorage.getItem("userInfo");
+  // 👇 Replace your current useEffect with this one
+  useEffect(() => {
+    const userInfo = localStorage.getItem("userInfo");
 
-  if (userInfo) {
-    navigate("/chats");
-  }
-}, [navigate]);
+    console.log("Homepage userInfo:", userInfo);
+
+    if (userInfo) {
+      navigate("/chats");
+    }
+  }, [navigate]);
+
   return (
     <Container maxW="xl" centerContent>
       <Box
@@ -36,10 +41,7 @@ useEffect(() => {
         borderRadius="lg"
         borderWidth="1px"
       >
-        <Text
-          fontSize="4xl"
-          fontFamily="Work sans"
-        >
+        <Text fontSize="4xl" fontFamily="Work sans">
           Connectify
         </Text>
       </Box>
@@ -54,20 +56,18 @@ useEffect(() => {
         <Tabs variant="soft-rounded" colorScheme="purple">
           <TabList mb="1em">
             <Tab width="50%">Login</Tab>
-
             <Tab width="50%">Sign Up</Tab>
           </TabList>
 
-<TabPanels>
-  <TabPanel>
-    <Login />
-  </TabPanel>
+          <TabPanels>
+            <TabPanel>
+              <Login />
+            </TabPanel>
 
-  <TabPanel>
-    <Signup />
-  </TabPanel>
-</TabPanels>
-          
+            <TabPanel>
+              <Signup />
+            </TabPanel>
+          </TabPanels>
         </Tabs>
       </Box>
     </Container>
