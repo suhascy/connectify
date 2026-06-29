@@ -1,22 +1,18 @@
 import { Box } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import ChatBox from "../components/ChatBox";
 import MyChats from "../components/MyChats";
 import SideDrawer from "../components/SideDrawer";
+import { ChatState } from "../context/ChatProvider";
 
 function Chats() {
   const navigate = useNavigate();
-
-  const [user, setUser] = useState();
+  const { user } = ChatState();
 
   useEffect(() => {
-    const userInfo = JSON.parse(
-      localStorage.getItem("userInfo")
-    );
-
-    setUser(userInfo);
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
     if (!userInfo) {
       navigate("/");
@@ -35,7 +31,6 @@ function Chats() {
         p="10px"
       >
         {user && <MyChats />}
-
         {user && <ChatBox />}
       </Box>
     </div>
