@@ -37,12 +37,15 @@ function MyChats() {
       flexDir="column"
       alignItems="center"
       p={3}
-      bg="white"
+      bg="rgba(0, 0, 0, 0.38)"
+      backdropFilter="blur(14px)"
       w={{ base: "100%", md: "31%" }}
-      borderRadius="lg"
-      borderWidth="1px"
+      borderRadius="18px"
+      border="1px solid rgba(0, 153, 255, 0.35)"
+      boxShadow="0 0 35px rgba(0, 153, 255, 0.18)"
+      color="white"
     >
-      <Text fontSize="2xl" pb={3}>
+      <Text fontSize="2xl" pb={3} fontWeight="bold">
         My Chats
       </Text>
 
@@ -50,33 +53,67 @@ function MyChats() {
         display="flex"
         flexDir="column"
         p={3}
-        bg="#F8F8F8"
+        bg="rgba(0, 0, 0, 0.42)"
+        backdropFilter="blur(10px)"
         w="100%"
         h="100%"
-        borderRadius="lg"
+        borderRadius="18px"
         overflowY="hidden"
+        border="1px solid rgba(0, 153, 255, 0.25)"
       >
         {chats && chats.length > 0 ? (
-          <Stack overflowY="scroll">
-            {chats.map((chat) => (
-              <Box
-                key={chat._id}
-                onClick={() => setSelectedChat(chat)}
-                cursor="pointer"
-                bg={selectedChat?._id === chat._id ? "#B794F4" : "#E8E8E8"}
-                color={selectedChat?._id === chat._id ? "white" : "black"}
-                px={3}
-                py={2}
-                borderRadius="lg"
-              >
-                <Text>
-                  {chat.users?.find((u) => u._id !== user._id)?.name || "Unknown User"}
-                </Text>
-              </Box>
-            ))}
+          <Stack overflowY="scroll" spacing={3}>
+            {chats.map((chat) => {
+              const otherUser =
+                chat.users?.find((u) => u._id !== user._id)?.name ||
+                "Unknown User";
+
+              return (
+                <Box
+                  key={chat._id}
+                  onClick={() => setSelectedChat(chat)}
+                  cursor="pointer"
+                  bg={
+                    selectedChat?._id === chat._id
+                      ? "linear-gradient(135deg, #0077ff, #00c8ff)"
+                      : "rgba(255, 255, 255, 0.08)"
+                  }
+                  color="white"
+                  px={4}
+                  py={3}
+                  borderRadius="16px"
+                  border={
+                    selectedChat?._id === chat._id
+                      ? "1px solid rgba(0, 200, 255, 0.55)"
+                      : "1px solid rgba(255, 255, 255, 0.08)"
+                  }
+                  boxShadow={
+                    selectedChat?._id === chat._id
+                      ? "0 0 18px rgba(0, 153, 255, 0.35)"
+                      : "0 0 12px rgba(255, 255, 255, 0.04)"
+                  }
+                  _hover={{
+                    bg:
+                      selectedChat?._id === chat._id
+                        ? "linear-gradient(135deg, #0077ff, #00c8ff)"
+                        : "rgba(0, 153, 255, 0.18)",
+                    transform: "translateY(-1px)",
+                  }}
+                  transition="all 0.2s ease"
+                >
+                  <Text fontWeight="bold">{otherUser}</Text>
+
+                  {chat.latestMessage && (
+                    <Text fontSize="sm" color="gray.300" noOfLines={1}>
+                      {chat.latestMessage.content}
+                    </Text>
+                  )}
+                </Box>
+              );
+            })}
           </Stack>
         ) : (
-          <Text>No chats yet</Text>
+          <Text color="gray.300">No chats yet</Text>
         )}
       </Box>
     </Box>

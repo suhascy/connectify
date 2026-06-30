@@ -9,14 +9,7 @@ const ENDPOINT = import.meta.env.VITE_API_URL;
 let socket;
 
 const ChatBox = () => {
-  const {
-  selectedChat,
-  user,
-  chats,
-  setChats,
-  notification,
-  setNotification,
-} = ChatState();
+  const { selectedChat, user, setChats, setNotification } = ChatState();
 
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
@@ -34,7 +27,6 @@ const ChatBox = () => {
 
   const getSender = () => {
     if (!selectedChat?.users || !user) return "";
-
     const sender = selectedChat.users.find((u) => u._id !== user._id);
     return sender?.name || "Chat";
   };
@@ -42,12 +34,7 @@ const ChatBox = () => {
   const updateSidebarLatestMessage = (message) => {
     setChats((prevChats) => {
       const updatedChats = prevChats.map((chat) =>
-        chat._id === message.chat._id
-          ? {
-              ...chat,
-              latestMessage: message,
-            }
-          : chat
+        chat._id === message.chat._id ? { ...chat, latestMessage: message } : chat
       );
 
       const updatedChat = updatedChats.find(
@@ -66,7 +53,6 @@ const ChatBox = () => {
     if (!user) return;
 
     socket = io(ENDPOINT);
-
     socket.emit("setup", user);
 
     socket.on("connected", () => {
@@ -74,13 +60,8 @@ const ChatBox = () => {
       setSocketConnected(true);
     });
 
-    socket.on("typing", () => {
-      setIsTyping(true);
-    });
-
-    socket.on("stop typing", () => {
-      setIsTyping(false);
-    });
+    socket.on("typing", () => setIsTyping(true));
+    socket.on("stop typing", () => setIsTyping(false));
 
     return () => {
       socket.off("connected");
@@ -125,46 +106,32 @@ const ChatBox = () => {
     setIsTyping(false);
   }, [selectedChat]);
 
-useEffect(() => {
-  if (!socket) return;
+  useEffect(() => {
+    if (!socket) return;
 
-  socket.on("message received", (newMessageReceived) => {
-  updateSidebarLatestMessage(newMessageReceived);
+    socket.on("message received", (newMessageReceived) => {
+      updateSidebarLatestMessage(newMessageReceived);
 
-  const currentChat = selectedChatRef.current;
+      const currentChat = selectedChatRef.current;
 
-  console.log("NEW MESSAGE RECEIVED:", newMessageReceived);
-  console.log("CURRENT CHAT:", currentChat);
-
-  if (
-    currentChat &&
-    newMessageReceived.chat._id === currentChat._id
-  ) {
-    setMessages((prev) => [...prev, newMessageReceived]);
-  } else {
-    console.log("ADDING NOTIFICATION");
-
-    setNotification((prev) => {
-      const alreadyExists = prev.find(
-        (n) => n._id === newMessageReceived._id
-      );
-
-      if (alreadyExists) return prev;
-
-      return [newMessageReceived, ...prev];
+      if (currentChat && newMessageReceived.chat._id === currentChat._id) {
+        setMessages((prev) => [...prev, newMessageReceived]);
+      } else {
+        setNotification((prev) => {
+          const alreadyExists = prev.find((n) => n._id === newMessageReceived._id);
+          if (alreadyExists) return prev;
+          return [newMessageReceived, ...prev];
+        });
+      }
     });
-  }
-});
 
-  return () => {
-    socket.off("message received");
-  };
-}, []);
+    return () => {
+      socket.off("message received");
+    };
+  }, []);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({
-      behavior: "smooth",
-    });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
   const typingHandler = (e) => {
@@ -208,9 +175,7 @@ useEffect(() => {
         );
 
         socket.emit("new message", data);
-
         setMessages((prev) => [...prev, data]);
-
         updateSidebarLatestMessage(data);
       } catch (error) {
         console.log("Send Message Error:", error);
@@ -223,10 +188,13 @@ useEffect(() => {
       display="flex"
       flexDir="column"
       p={3}
-      bg="white"
+      bg="rgba(0, 0, 0, 0.38)"
+      backdropFilter="blur(14px)"
       w={{ base: "100%", md: "68%" }}
-      borderRadius="lg"
-      borderWidth="1px"
+      borderRadius="18px"
+      border="1px solid rgba(0, 153, 255, 0.35)"
+      boxShadow="0 0 35px rgba(0, 153, 255, 0.18)"
+      color="white"
     >
       {selectedChat ? (
         <>
@@ -235,14 +203,15 @@ useEffect(() => {
             pb={1}
             px={2}
             fontFamily="Work sans"
-            borderBottomWidth="1px"
+            borderBottom="1px solid rgba(0, 153, 255, 0.25)"
+            color="white"
           >
             {getSender()}
           </Text>
 
           <Text
             fontSize="sm"
-            color={socketConnected ? "green.500" : "red.500"}
+            color={socketConnected ? "#4ade80" : "#f87171"}
             px={2}
             mb={2}
           >
@@ -253,15 +222,18 @@ useEffect(() => {
             display="flex"
             flexDir="column"
             justifyContent="space-between"
-            bg="#E8E8E8"
+            bg="rgba(0, 0, 0, 0.42)"
+            backdropFilter="blur(10px)"
             w="100%"
             h="80vh"
-            borderRadius="lg"
+            borderRadius="18px"
             p={3}
+            border="1px solid rgba(0, 153, 255, 0.25)"
+            boxShadow="inset 0 0 40px rgba(0, 153, 255, 0.08)"
           >
-            <Box overflowY="auto" flex="1" mb={3}>
+            <Box overflowY="auto" flex="1" mb={3} pr={2}>
               {loading ? (
-                <Text>Loading...</Text>
+                <Text color="gray.300">Loading...</Text>
               ) : (
                 messages.map((m) => (
                   <Box
@@ -270,14 +242,33 @@ useEffect(() => {
                     justifyContent={
                       m.sender._id === user._id ? "flex-end" : "flex-start"
                     }
-                    mb={2}
+                    mb={3}
                   >
                     <Box
-                      bg={m.sender._id === user._id ? "#BEE3F8" : "#B9F5D0"}
+                      bg={
+                        m.sender._id === user._id
+                          ? "linear-gradient(135deg, #0077ff, #00c8ff)"
+                          : "rgba(255, 255, 255, 0.11)"
+                      }
+                      color="white"
                       px={4}
                       py={2}
-                      borderRadius="20px"
+                      borderRadius={
+                        m.sender._id === user._id
+                          ? "18px 18px 4px 18px"
+                          : "18px 18px 18px 4px"
+                      }
                       maxW="75%"
+                      boxShadow={
+                        m.sender._id === user._id
+                          ? "0 0 18px rgba(0, 153, 255, 0.35)"
+                          : "0 0 14px rgba(255, 255, 255, 0.05)"
+                      }
+                      border={
+                        m.sender._id === user._id
+                          ? "1px solid rgba(0, 200, 255, 0.45)"
+                          : "1px solid rgba(255, 255, 255, 0.08)"
+                      }
                     >
                       {m.content}
                     </Box>
@@ -286,13 +277,7 @@ useEffect(() => {
               )}
 
               {isTyping && (
-                <Text
-                  fontSize="sm"
-                  color="gray.600"
-                  fontStyle="italic"
-                  ml={2}
-                  mb={2}
-                >
+                <Text fontSize="sm" color="blue.200" fontStyle="italic" ml={2} mb={2}>
                   {getSender()} is typing...
                 </Text>
               )}
@@ -302,7 +287,16 @@ useEffect(() => {
 
             <Input
               variant="filled"
-              bg="white"
+              bg="rgba(255, 255, 255, 0.1)"
+              color="white"
+              border="1px solid rgba(0, 153, 255, 0.25)"
+              _hover={{ bg: "rgba(255, 255, 255, 0.14)" }}
+              _focus={{
+                bg: "rgba(255, 255, 255, 0.14)",
+                borderColor: "#00c8ff",
+                boxShadow: "0 0 15px rgba(0, 200, 255, 0.35)",
+              }}
+              _placeholder={{ color: "gray.400" }}
               placeholder="Type a message..."
               value={newMessage}
               onChange={typingHandler}
@@ -311,13 +305,8 @@ useEffect(() => {
           </Box>
         </>
       ) : (
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          h="100%"
-        >
-          <Text fontSize="3xl" fontFamily="Work sans">
+        <Box display="flex" justifyContent="center" alignItems="center" h="100%">
+          <Text fontSize="3xl" fontFamily="Work sans" color="white">
             Click on a user to start chatting
           </Text>
         </Box>

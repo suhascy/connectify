@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
+import AnimatedBackground from "./components/AnimatedBackground";
 
 import { ChakraProvider } from "@chakra-ui/react";
 import { BrowserRouter } from "react-router-dom";
@@ -10,12 +11,14 @@ import ChatProvider from "./context/ChatProvider";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <ChakraProvider>
-        <ChatProvider>
+  <BrowserRouter>
+    <ChakraProvider>
+      <ChatProvider>
+        <AnimatedBackground>
           <App />
-        </ChatProvider>
-      </ChakraProvider>
-    </BrowserRouter>
-  </React.StrictMode>
+        </AnimatedBackground>
+      </ChatProvider>
+    </ChakraProvider>
+  </BrowserRouter>
+</React.StrictMode>
 );
