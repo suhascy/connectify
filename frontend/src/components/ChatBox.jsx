@@ -1,7 +1,7 @@
-import { Box, Input, Text } from "@chakra-ui/react";
+import { Box, Button, Input, Text } from "@chakra-ui/react";
 import axios from "axios";
 import io from "socket.io-client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChatState } from "../context/ChatProvider";
 
 const ENDPOINT = import.meta.env.VITE_API_URL;
@@ -9,7 +9,13 @@ const ENDPOINT = import.meta.env.VITE_API_URL;
 let socket;
 
 const ChatBox = () => {
-  const { selectedChat, user, setChats, setNotification } = ChatState();
+  const {
+    selectedChat,
+    setSelectedChat,
+    user,
+    setChats,
+    setNotification,
+  } = ChatState();
 
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
@@ -34,7 +40,9 @@ const ChatBox = () => {
   const updateSidebarLatestMessage = (message) => {
     setChats((prevChats) => {
       const updatedChats = prevChats.map((chat) =>
-        chat._id === message.chat._id ? { ...chat, latestMessage: message } : chat
+        chat._id === message.chat._id
+          ? { ...chat, latestMessage: message }
+          : chat
       );
 
       const updatedChat = updatedChats.find(
@@ -48,6 +56,45 @@ const ChatBox = () => {
       return updatedChat ? [updatedChat, ...remainingChats] : updatedChats;
     });
   };
+
+const deleteChatHandler = async () => {
+  if (!selectedChat || !user) return;
+
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this chat permanently?"
+  );
+
+  if (!confirmDelete) return;
+
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+      },
+    };
+
+    await axios.delete(
+      `${import.meta.env.VITE_API_URL}/api/chat/${selectedChat._id}`,
+      config
+    );
+
+    setChats((prevChats) =>
+      prevChats.filter((chat) => chat._id !== selectedChat._id)
+    );
+
+    setNotification((prev) =>
+      prev.filter((n) => n.chat._id !== selectedChat._id)
+    );
+
+    setMessages([]);
+    setSelectedChat(null);
+  } catch (error) {
+    console.log("Delete Chat Error:", error);
+    console.log("STATUS:", error.response?.status);
+    console.log("DATA:", error.response?.data);
+    alert("Failed to delete chat");
+  }
+};
 
   useEffect(() => {
     if (!user) return;
@@ -118,8 +165,12 @@ const ChatBox = () => {
         setMessages((prev) => [...prev, newMessageReceived]);
       } else {
         setNotification((prev) => {
-          const alreadyExists = prev.find((n) => n._id === newMessageReceived._id);
+          const alreadyExists = prev.find(
+            (n) => n._id === newMessageReceived._id
+          );
+
           if (alreadyExists) return prev;
+
           return [newMessageReceived, ...prev];
         });
       }
@@ -198,21 +249,37 @@ const ChatBox = () => {
     >
       {selectedChat ? (
         <>
-          <Text
-            fontSize={{ base: "28px", md: "30px" }}
-            pb={1}
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            pb={2}
             px={2}
-            fontFamily="Work sans"
             borderBottom="1px solid rgba(0, 153, 255, 0.25)"
-            color="white"
           >
-            {getSender()}
-          </Text>
+            <Text
+              fontSize={{ base: "28px", md: "30px" }}
+              fontFamily="Work sans"
+              color="white"
+            >
+              {getSender()}
+            </Text>
+
+            <Button
+              size="sm"
+              colorScheme="red"
+              variant="outline"
+              onClick={deleteChatHandler}
+            >
+              Delete Chat
+            </Button>
+          </Box>
 
           <Text
             fontSize="sm"
             color={socketConnected ? "#4ade80" : "#f87171"}
             px={2}
+            mt={1}
             mb={2}
           >
             {socketConnected ? "🟢 Connected" : "🔴 Disconnected"}
@@ -277,7 +344,13 @@ const ChatBox = () => {
               )}
 
               {isTyping && (
-                <Text fontSize="sm" color="blue.200" fontStyle="italic" ml={2} mb={2}>
+                <Text
+                  fontSize="sm"
+                  color="blue.200"
+                  fontStyle="italic"
+                  ml={2}
+                  mb={2}
+                >
                   {getSender()} is typing...
                 </Text>
               )}

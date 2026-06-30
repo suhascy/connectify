@@ -1,4 +1,6 @@
 import User from "../models/userModel.js";
+import Chat from "../models/chatModel.js";
+import Message from "../models/messageModel.js";
 import generateToken from "../utils/generateToken.js";
 
 // REGISTER USER
@@ -13,11 +15,7 @@ export const registerUser = async (req, res) => {
       throw new Error("User already exists");
     }
 
-    const user = await User.create({
-      name,
-      email,
-      password,
-    });
+    const user = await User.create({ name, email, password });
 
     if (user) {
       res.status(201).json({
@@ -33,8 +31,8 @@ export const registerUser = async (req, res) => {
   } catch (error) {
     console.log("REGISTER ERROR:", error);
     res.status(res.statusCode === 200 ? 500 : res.statusCode).json({
-  message: error.message,
-});
+      message: error.message,
+    });
   }
 };
 
@@ -45,10 +43,7 @@ export const authUser = async (req, res) => {
 
     const user = await User.findOne({ email });
 
-    if (
-      user &&
-      (await user.matchPassword(password))
-    ) {
+    if (user && (await user.matchPassword(password))) {
       res.json({
         _id: user._id,
         name: user.name,
@@ -75,11 +70,6 @@ export const getUserProfile = async (req, res) => {
 // SEARCH USERS
 export const allUsers = async (req, res) => {
   try {
-    console.log("--------------------------------");
-    console.log("SEARCH REQUEST RECEIVED");
-    console.log("SEARCH TERM:", req.query.search);
-    console.log("LOGGED USER:", req.user);
-
     const keyword = req.query.search
       ? {
           $or: [
@@ -99,22 +89,56 @@ export const allUsers = async (req, res) => {
         }
       : {};
 
-    console.log("KEYWORD:", keyword);
-
     const users = await User.find(keyword).find({
       _id: { $ne: req.user._id },
     });
 
-    console.log("FOUND USERS:");
-    console.log(users);
-
     res.send(users);
   } catch (error) {
-    console.log("SEARCH ERROR:");
-    console.log(error);
+    console.log("SEARCH ERROR:", error);
 
     res.status(res.statusCode === 200 ? 500 : res.statusCode).json({
-  message: error.message,
-});
+      message: error.message,
+    });
+  }
+};
+
+// DELETE OWN ACCOUNT
+export const deleteMyAccount = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      res.status(404);
+      throw new Error("User not found");
+    }
+
+    const userChats = await Chat.find({
+      users: { $elemMatch: { $eq: userId } },
+    });
+
+    const chatIds = userChats.map((chat) => chat._id);
+
+    await Message.deleteMany({
+      chat: { $in: chatIds },
+    });
+
+    await Chat.deleteMany({
+      users: { $elemMatch: { $eq: userId } },
+    });
+
+    await User.findByIdAndDelete(userId);
+
+    res.status(200).json({
+      message: "Account deleted successfully",
+    });
+  } catch (error) {
+    console.log("DELETE ACCOUNT ERROR:", error);
+
+    res.status(res.statusCode === 200 ? 500 : res.statusCode).json({
+      message: error.message,
+    });
   }
 };

@@ -4,14 +4,27 @@ import {
   registerUser,
   authUser,
   allUsers,
+  getUserProfile,
+  deleteMyAccount,
 } from "../controllers/userController.js";
 
 import protect from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.route("/").post(registerUser).get(protect, allUsers);
+// Register & Search Users
+router
+  .route("/")
+  .post(registerUser)
+  .get(protect, allUsers);
 
+// Login
 router.post("/login", authUser);
+
+// Logged-in User Profile
+router.get("/profile", protect, getUserProfile);
+
+// Delete Own Account
+router.delete("/profile", protect, deleteMyAccount);
 
 export default router;
